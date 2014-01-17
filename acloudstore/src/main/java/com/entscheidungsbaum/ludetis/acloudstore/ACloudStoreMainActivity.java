@@ -24,9 +24,8 @@ import java.util.Locale;
 public class ACloudStoreMainActivity extends ActionBarActivity implements ActionBar.TabListener {
 
 
-    private static final LOG_TAG=ACloudStoreMainActivity.class.
+    private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
 
-    getName();
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -48,6 +47,7 @@ public class ACloudStoreMainActivity extends ActionBarActivity implements Action
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
+        // wondering if there is a nicer approach to catch all values from the editText boxes at once ?
 
     }
 

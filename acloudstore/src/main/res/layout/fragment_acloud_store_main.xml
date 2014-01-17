@@ -17,33 +17,106 @@
         android:layout_marginRight="51dp"
         android:layout_marginBottom="249dp">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="left|top"
+            android:weightSum="1">
 
-        <EditText
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:ems="15"
-            android:id="@+id/name"
-            android:layout_gravity="left|top" />
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical">
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="points"
-            android:ems="10"
-            android:id="@+id/persons_name"
-            android:layout_gravity="left|bottom" />
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Email"
-            android:ems="10"
-            android:id="@+id/email"
-            android:layout_gravity="left|center_vertical" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter gamelevel"
+                        android:id="@+id/textView"
+                        android:layout_gravity="left|top" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:text="@string/gamelevel"
+                        android:ems="10"
+                        android:id="@+id/gamelevel"
+                        android:layout_gravity="left|bottom" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter your points"
+                        android:id="@+id/textView"
+                        android:layout_gravity="left|top" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:text="@string/points"
+                        android:ems="10"
+                        android:id="@+id/points"
+                        android:layout_gravity="left|bottom" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter you nickname"
+                        android:id="@+id/textView"
+                        android:layout_gravity="left|top" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:text="@string/nickname"
+                        android:ems="10"
+                        android:id="@+id/nickname"
+                        android:layout_gravity="left|bottom" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter you email"
+                        android:id="@+id/email"
+                        android:layout_gravity="left|top" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:text="@string/email"
+                        android:ems="10"
+                        android:id="@+id/email"
+                        android:layout_gravity="left|bottom" />
+                </TableRow>
+
+
+            </TableLayout>
+        </LinearLayout>
     </FrameLayout>
 
 </RelativeLayout>
