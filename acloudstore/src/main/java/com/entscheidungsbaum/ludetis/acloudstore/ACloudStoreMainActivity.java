@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.example.games.basegameutils.GameHelper;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,7 +27,7 @@ import java.util.Map;
 /**
  * Start
  */
-public class ACloudStoreMainActivity extends BaseGameActivity implements ActionBar.TabListener, View.OnClickListener, com.entscheidungsbaum.ludetis.acloudstore.gcs.GameHelper.GameHelperListener {
+public class ACloudStoreMainActivity extends BaseGameActivity implements ActionBar.TabListener, View.OnClickListener, GameHelper.GameHelperListener {
 
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
