@@ -130,8 +130,8 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="New Button"
-                        android:id="@+id/button"
+                        android:text="Submit to cloud"
+                        android:id="@+id/submitToCloud"
                         android:layout_column="1" />
                 </TableRow>
 
