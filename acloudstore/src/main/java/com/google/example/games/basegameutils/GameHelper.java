@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.entscheidungsbaum.ludetis.acloudstore.gcs;
+package com.google.example.games.basegameutils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
