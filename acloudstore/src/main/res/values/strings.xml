@@ -9,4 +9,6 @@
     <string name="nickname">Name</string>
     <string name="gamelevel">GameLevel</string>
     <string name="email">GameLevel</string>
+
+    <string name="app_id">421680919918</string>
 </resources>
