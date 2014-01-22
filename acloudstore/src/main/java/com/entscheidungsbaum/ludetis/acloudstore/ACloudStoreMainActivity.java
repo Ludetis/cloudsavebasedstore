@@ -7,25 +7,32 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
  * Start
  */
-public class ACloudStoreMainActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class ACloudStoreMainActivity extends BaseGameActivity implements ActionBar.TabListener, View.OnClickListener, com.entscheidungsbaum.ludetis.acloudstore.gcs.GameHelper.GameHelperListener {
 
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
 
+
+    public ACloudStoreMainActivity() {
+    }
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -47,7 +54,34 @@ public class ACloudStoreMainActivity extends ActionBarActivity implements Action
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
+        /*
+        get the data from all the fields
+         */
+        final EditText gamelevel = (EditText) findViewById(R.id.gamelevel);
+        final EditText points = (EditText) findViewById(R.id.points);
+        final EditText nickname = (EditText) findViewById(R.id.nickname);
+        final EditText email = (EditText) findViewById(R.id.email);
+
+        final HashMap<String, String> cloudGameMap = new HashMap<String, String>();
+
+        cloudGameMap.put("gameLevel", gamelevel.getText().toString());
+        cloudGameMap.put("points", points.getText().toString());
+        cloudGameMap.put("nickname", nickname.getText().toString());
+        cloudGameMap.put("email", email.getText().toString());
+
+        final Button submitToCloud = (Button) findViewById(R.id.submitToCloud);
+        submitToCloud.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Log.d(LOG_TAG, "submitting to google cloud service [" + cloudGameMap.toString() + "]");
+                /*
+                invoke the service and pass the data
+                 */
+
+            }
+        });
         // wondering if there is a nicer approach to catch all values from the editText boxes at once ?
+        Map<String, String> aMap = new HashMap<String, String>();
+
 
     }
 
@@ -85,6 +119,11 @@ public class ACloudStoreMainActivity extends ActionBarActivity implements Action
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
     /**
@@ -159,5 +198,6 @@ public class ACloudStoreMainActivity extends ActionBarActivity implements Action
             return rootView;
         }
     }
+
 
 }
