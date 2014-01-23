@@ -5,13 +5,13 @@ package com.entscheidungsbaum.ludetis.acloudstore.gcs;
  */
 public interface CloudMap<K, V> {
 
-    int size;
+    public int size();
 
-    boolean isEmpty;
+    public boolean isEmpty();
 
-    boolean containsKey(Object key);
+    public boolean containsKey(Object key);
 
-    boolean containValue(Object value);
+    public boolean containValue(Object value);
 
     public void put(K key, V value);
 
