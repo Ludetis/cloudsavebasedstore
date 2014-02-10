@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/ACloudStoreApp.iml" filepath="$PROJECT_DIR$/ACloudStoreApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/acloudstore/acloudstore.iml" filepath="$PROJECT_DIR$/acloudstore/acloudstore.iml" />
       <module fileurl="file://$PROJECT_DIR$/acloudstore/acloudstore.iml" filepath="$PROJECT_DIR$/acloudstore/acloudstore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/acloudstore/acloudstore.iml" filepath="$PROJECT_DIR$/acloudstore/acloudstore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cloudsavebasedstore.iml" filepath="$PROJECT_DIR$/cloudsavebasedstore.iml" />
       <module fileurl="file://$PROJECT_DIR$/cloudsavebasedstore.iml" filepath="$PROJECT_DIR$/cloudsavebasedstore.iml" />
     </modules>
   </component>

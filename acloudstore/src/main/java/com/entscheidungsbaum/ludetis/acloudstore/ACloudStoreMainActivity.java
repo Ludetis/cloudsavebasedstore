@@ -1,5 +1,6 @@
 package com.entscheidungsbaum.ludetis.acloudstore;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,7 +28,7 @@ import java.util.Map;
 /**
  * Start
  */
-public class ACloudStoreMainActivity extends BaseGameActivity implements ActionBar.TabListener, View.OnClickListener, GameHelper.GameHelperListener {
+public class ACloudStoreMainActivity extends Activity implements ActionBar.TabListener, View.OnClickListener, GameHelper.GameHelperListener {
 
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
@@ -125,6 +126,16 @@ public class ACloudStoreMainActivity extends BaseGameActivity implements ActionB
 
     @Override
     public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
 
     }
 
