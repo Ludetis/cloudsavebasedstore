@@ -1,4 +1,6 @@
 .gradle
+/bin
+/gen
 /build
 /local.properties
 /.idea/workspace.xml
