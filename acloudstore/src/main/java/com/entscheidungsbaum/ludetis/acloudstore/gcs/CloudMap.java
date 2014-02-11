@@ -15,6 +15,11 @@ public interface CloudMap<K, V> {
 
     public void put(K key, V value);
 
+    /**
+     * flushes the map if task is done to upstream
+     */
+    public void flush();
+
     public K getKey();
 
     public K getAllKey();
