@@ -25,10 +25,11 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
 
     int mState = STATE_UNCONFIGURED;
 
+    AppStateClient mAppStateClient ;
 
     public CloudMapImpl(Context context) {
 
-        AppStateClient mAppStateClient = mAppStateClient = new AppStateClient.Builder(context, this, this)
+         mAppStateClient = new AppStateClient.Builder(context, this, this)
                 .setScopes(mScopes)
                 .create();
         mState = STATE_DISCONNECTED;
