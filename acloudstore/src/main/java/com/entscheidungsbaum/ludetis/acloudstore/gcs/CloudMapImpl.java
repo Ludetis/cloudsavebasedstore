@@ -1,12 +1,39 @@
 package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.google.android.gms.appstate.AppStateClient;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.Scopes;
+
 /**
  * Created by marcus on 1/20/14.
  */
-public class CloudMapImpl implements CloudMap {
+public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     final String LOG_TAG = CloudMapImpl.class.getName();
 
+    public static final String[] mScopes = {Scopes.APP_STATE};
+
+    public static final int STATE_UNCONFIGURED = 0;
+    public static final int STATE_DISCONNECTED = 1;
+    public static final int STATE_CONNECTING = 2;
+    public static final int STATE_CONNECTED = 3;
+
+    int mState = STATE_UNCONFIGURED;
+
+
+    public CloudMapImpl(Context context) {
+
+        AppStateClient mAppStateClient = mAppStateClient = new AppStateClient.Builder(context, this, this)
+                .setScopes(mScopes)
+                .create();
+        mState = STATE_DISCONNECTED;
+
+    }
 
     /**
      * 1. Step to run the google cloud save
@@ -67,7 +94,31 @@ public class CloudMapImpl implements CloudMap {
     }
 
     @Override
+    public void flush() {
+
+    }
+
+    @Override
     public int size() {
         return 0;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        mState = STATE_CONNECTED;
+        Log.i(LOG_TAG, "onConnected invoked state =[" + mState + "]");
+    }
+
+    @Override
+    public void onDisconnected() {
+        mState = STATE_DISCONNECTED;
+        Log.i(LOG_TAG, "onDisconnected invoked state =[" + mState + "]");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        mState = STATE_DISCONNECTED;
+        Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]");
+
     }
 }
