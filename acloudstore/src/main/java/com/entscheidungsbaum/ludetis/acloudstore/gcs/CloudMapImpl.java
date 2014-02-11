@@ -75,7 +75,7 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
     }
 
     @Override
-    public Object getValue() {
+    public Object getValue(Object key) {
         return null;
     }
 
