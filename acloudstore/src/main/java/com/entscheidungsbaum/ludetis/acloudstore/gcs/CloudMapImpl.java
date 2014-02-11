@@ -5,7 +5,7 @@ package com.entscheidungsbaum.ludetis.acloudstore.gcs;
  */
 public class CloudMapImpl implements CloudMap {
 
-    final String LOG_TAG = CloadMapImpl.class.getName();
+    final String LOG_TAG = CloudMapImpl.class.getName();
 
 
     /**
@@ -59,5 +59,15 @@ public class CloudMapImpl implements CloudMap {
     @Override
     public void update(CloudMap cloudMap) {
 
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return 0;
     }
 }
