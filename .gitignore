@@ -1,7 +1,7 @@
 .gradle
 /bin
 /gen
-/build
+/acloudstore/build
 /local.properties
 /.idea/workspace.xml
 .DS_Store
