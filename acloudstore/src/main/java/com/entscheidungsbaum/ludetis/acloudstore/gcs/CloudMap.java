@@ -24,7 +24,7 @@ public interface CloudMap<K, V> {
 
     public K getAllKey();
 
-    public V getValue();
+    public V getValue(K key);
 
     public V getAll(Object key);
 

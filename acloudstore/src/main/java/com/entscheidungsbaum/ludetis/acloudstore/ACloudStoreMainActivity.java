@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMap;
+import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMapImpl;
 import com.google.example.games.basegameutils.GameHelper;
 
 import java.util.HashMap;
@@ -28,189 +30,72 @@ import java.util.Map;
 /**
  * Start
  */
-public class ACloudStoreMainActivity extends Activity implements ActionBar.TabListener, View.OnClickListener, GameHelper.GameHelperListener {
+public class ACloudStoreMainActivity extends Activity implements View.OnClickListener {
 
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
+
+    private CloudMap<String,String> mCloudMap;
+    private EditText gamelevel;
+    private EditText points;
+    private EditText nickname;
+    private EditText email;
 
 
     public ACloudStoreMainActivity() {
     }
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
+        mCloudMap = new CloudMapImpl(this);
+
         /*
         get the data from all the fields
          */
-        final EditText gamelevel = (EditText) findViewById(R.id.gamelevel);
-        final EditText points = (EditText) findViewById(R.id.points);
-        final EditText nickname = (EditText) findViewById(R.id.nickname);
-        final EditText email = (EditText) findViewById(R.id.email);
+        gamelevel = (EditText) findViewById(R.id.gamelevel);
+        points = (EditText) findViewById(R.id.points);
+        nickname = (EditText) findViewById(R.id.nickname);
+        email = (EditText) findViewById(R.id.email);
 
-        final HashMap<String, String> cloudGameMap = new HashMap<String, String>();
 
-        cloudGameMap.put("gameLevel", gamelevel.getText().toString());
-        cloudGameMap.put("points", points.getText().toString());
-        cloudGameMap.put("nickname", nickname.getText().toString());
-        cloudGameMap.put("email", email.getText().toString());
-
-        final Button submitToCloud = (Button) findViewById(R.id.submitToCloud);
-        submitToCloud.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Log.d(LOG_TAG, "submitting to google cloud service [" + cloudGameMap.toString() + "]");
-                /*
-                invoke the service and pass the data
-                 */
-
-            }
-        });
-        // wondering if there is a nicer approach to catch all values from the editText boxes at once ?
-        Map<String, String> aMap = new HashMap<String, String>();
+        findViewById(R.id.submitToCloud).setOnClickListener(this);
+        findViewById(R.id.loadFromCloud).setOnClickListener(this);
 
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.acloud_store_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
 
     @Override
     public void onClick(View v) {
-
-    }
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
+        if(v.getId()==R.id.submitToCloud) {
+            submitToCloud();
+        } else if(v.getId()==R.id.loadFromCloud) {
+            loadFromCloud();
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    private void loadFromCloud() {
+        Log.d(LOG_TAG, "loading from google cloud service [" + mCloudMap.toString() + "]");
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_acloud_store_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
+        gamelevel.setText( mCloudMap.getValue("gameLevel") );
+        points.setText( mCloudMap.getValue("points") );
+        nickname.setText( mCloudMap.getValue("nickname") );
+        email.setText( mCloudMap.getValue("email") );
     }
 
+    private void submitToCloud() {
+        Log.d(LOG_TAG, "submitting to google cloud service [" + mCloudMap.toString() + "]");
 
+        mCloudMap.put("gameLevel", gamelevel.getText().toString());
+        mCloudMap.put("points", points.getText().toString());
+        mCloudMap.put("nickname", nickname.getText().toString());
+        mCloudMap.put("email", email.getText().toString());
+
+        mCloudMap.flush();
+    }
 }
