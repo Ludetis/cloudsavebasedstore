@@ -99,7 +99,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Enter you email"
-                        android:id="@+id/email"
                         android:layout_gravity="left|top" />
 
                     <EditText
