@@ -58,7 +58,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
+                        android:inputType="number"
                         android:ems="10"
                         android:id="@+id/gamelevel"
                         android:layout_gravity="left|bottom" />
@@ -78,7 +78,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
+                        android:inputType="text"
                         android:ems="10"
                         android:id="@+id/points"
                         android:layout_gravity="left|bottom" />
@@ -98,7 +98,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
+                        android:inputType="text"
                         android:ems="10"
                         android:id="@+id/nickname"
                         android:layout_gravity="left|bottom" />
@@ -117,7 +117,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
+                        android:inputType="text"
                         android:ems="10"
                         android:id="@+id/email"
                         android:layout_gravity="left|bottom" />
