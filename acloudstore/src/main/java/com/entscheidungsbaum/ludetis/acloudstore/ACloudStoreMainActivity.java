@@ -35,7 +35,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
 
-    private CloudMap<String,String> mCloudMap;
+    private CloudMap<String, String> mCloudMap;
     private EditText gamelevel;
     private EditText points;
     private EditText nickname;
@@ -44,7 +44,6 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
 
     public ACloudStoreMainActivity() {
     }
-
 
 
     @Override
@@ -62,40 +61,41 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         nickname = (EditText) findViewById(R.id.nickname);
         email = (EditText) findViewById(R.id.email);
 
-
         findViewById(R.id.submitToCloud).setOnClickListener(this);
         findViewById(R.id.loadFromCloud).setOnClickListener(this);
-
 
     }
 
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.submitToCloud) {
+        if (v.getId() == R.id.submitToCloud) {
+            Log.d(LOG_TAG, "submitting fields to google cloud GAMELEVEL GET TEXT[" + gamelevel.getText().toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
+
             submitToCloud();
-        } else if(v.getId()==R.id.loadFromCloud) {
+        } else if (v.getId() == R.id.loadFromCloud) {
             loadFromCloud();
         }
     }
 
     private void loadFromCloud() {
-        Log.d(LOG_TAG, "loading from google cloud service [" + mCloudMap.toString() + "]");
+        Log.d(LOG_TAG, "loading from google cloud service [" + mCloudMap.toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
 
-        gamelevel.setText( mCloudMap.getValue("gameLevel") );
-        points.setText( mCloudMap.getValue("points") );
-        nickname.setText( mCloudMap.getValue("nickname") );
-        email.setText( mCloudMap.getValue("email") );
+        gamelevel.setText(mCloudMap.getValue("gameLevel"));
+        points.setText(mCloudMap.getValue("points"));
+        nickname.setText(mCloudMap.getValue("nickname"));
+        email.setText(mCloudMap.getValue("email"));
     }
 
     private void submitToCloud() {
-        Log.d(LOG_TAG, "submitting to google cloud service [" + mCloudMap.toString() + "]");
+        Log.d(LOG_TAG, "about to submit google cloud service for nickname [" + nickname.getText().toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
 
         mCloudMap.put("gameLevel", gamelevel.getText().toString());
         mCloudMap.put("points", points.getText().toString());
         mCloudMap.put("nickname", nickname.getText().toString());
         mCloudMap.put("email", email.getText().toString());
+        Log.d(LOG_TAG, "submitting to google cloud service [" + mCloudMap.toString() + "]");
 
-        mCloudMap.flush();
+        mCloudMap.flush(mCloudMap);
     }
 }
