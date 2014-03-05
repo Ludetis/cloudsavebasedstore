@@ -13,6 +13,7 @@ import com.google.android.gms.common.Scopes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,6 +62,8 @@ public class CloudMapImpl<K, V> implements CloudMap<K, V>, GooglePlayServicesCli
         mAppStateClient.connect();
         mState = STATE_DISCONNECTED;
         this.mCloudMap = new HashMap<K, V>();
+
+        ///Log.d(this.mCloudMap.toString();
     }
 
     /**
@@ -92,7 +95,7 @@ public class CloudMapImpl<K, V> implements CloudMap<K, V>, GooglePlayServicesCli
     @Override
     public V put(K key, V value) {
         Log.d(LOG_TAG, "Object => " + key + " value " + value);
-        mCloudMap.put(key, value);
+        //mCloudMap.put(key, value);
 //        CloudMap<K, V> cMap = (CloudMap) new HashMap<K, V>();
 //
 //
@@ -111,8 +114,9 @@ public class CloudMapImpl<K, V> implements CloudMap<K, V>, GooglePlayServicesCli
 //
 //            //cMap[size++] = (CloudMap)new  HashMap<K, V>(key, value);
 //        }
-        return value;
+        return mCloudMap.put(key, value);
     }
+
 
     /**
      * Removes all elements from this {@code Map}, leaving it empty.
@@ -261,11 +265,18 @@ public class CloudMapImpl<K, V> implements CloudMap<K, V>, GooglePlayServicesCli
     @Override
     public String toString() {
 
-//        try {
-//
-//        }
-
-        return "empty";
+        StringBuffer sb = new StringBuffer();
+        //        try {
+        //
+        //        }
+        Iterator iter = mCloudMap.keySet().iterator();
+        while (iter.hasNext()) {
+            sb.append("{ ");
+            sb.append(iter.next());
+            sb.append(" - ");
+            sb.append("}");
+        }
+        return sb.toString();
     }
 
     @Override

@@ -22,9 +22,11 @@ import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMap;
 import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMapImpl;
 import com.google.example.games.basegameutils.GameHelper;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -51,7 +53,6 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
-        mCloudMap = new CloudMapImpl(this);
 
         /*
         get the data from all the fields
@@ -89,12 +90,13 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
 
     private void submitToCloud() {
         Log.d(LOG_TAG, "about to submit google cloud service for nickname [" + nickname.getText().toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
+        mCloudMap = new CloudMapImpl(this);
 
         mCloudMap.put("gameLevel", gamelevel.getText().toString());
         mCloudMap.put("points", points.getText().toString());
         mCloudMap.put("nickname", nickname.getText().toString());
         mCloudMap.put("email", email.getText().toString());
-        Log.d(LOG_TAG, "submitting to google cloud service [" + mCloudMap.toString() + "]");
+        Log.d(LOG_TAG, "submitting to google cloud service gameLevel [" + mCloudMap.toString() + "]");
 
         mCloudMap.flush(mCloudMap);
     }

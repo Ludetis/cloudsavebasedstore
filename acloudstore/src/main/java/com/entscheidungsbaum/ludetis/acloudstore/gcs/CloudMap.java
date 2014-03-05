@@ -1,11 +1,12 @@
 package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by marcus on 1/20/14.
  */
-public interface CloudMap<K, V> extends Map<K,V>{
+public interface CloudMap<K, V> extends Map<K, V> {
 
     public int size();
 
@@ -13,9 +14,9 @@ public interface CloudMap<K, V> extends Map<K,V>{
 
     //public boolean containsKey(K key);
 
-   // public boolean containsValue(V value);
+    // public boolean containsValue(V value);
 
-//    public void put(K key, V value);
+    //public V put(K key, V value);
 
     /**
      * flushes the map if task is done to upstream
