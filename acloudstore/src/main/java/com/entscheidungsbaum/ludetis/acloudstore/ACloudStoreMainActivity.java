@@ -31,6 +31,7 @@ import java.util.Set;
 
 /**
  * Start
+ * @author marcus
  */
 public class ACloudStoreMainActivity extends Activity implements View.OnClickListener {
 

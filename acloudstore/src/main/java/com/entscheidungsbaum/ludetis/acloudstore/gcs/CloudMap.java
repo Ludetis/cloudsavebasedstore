@@ -12,12 +12,6 @@ public interface CloudMap<K, V> extends Map<K, V> {
 
     public boolean isEmpty();
 
-    //public boolean containsKey(K key);
-
-    // public boolean containsValue(V value);
-
-    //public V put(K key, V value);
-
     /**
      * flushes the map if task is done to upstream
      */
