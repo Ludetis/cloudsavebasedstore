@@ -1,34 +1,24 @@
 package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Created by marcus on 1/20/14.
  */
-public interface CloudMap<K, V> extends Map<K, V> {
-
-    public int size();
-
-    public boolean isEmpty();
+public interface CloudMap  {
 
     /**
-     * flushes the map if task is done to upstream
+     * flushes the map to cloud
      */
-    public void flush(CloudMap aCloudMap);
+    public void flush();
 
-    public K getKey();
+    public Collection<String> getAllKeys();
 
-    public K getAllKey();
+    public Serializable get(String key);
 
-    public V getValue(K key);
+    public void put(String key, Serializable value);
 
-    public V getAll(K key);
-
-    public void update(CloudMap<K, V> cloudMap);
-
-    public byte[] toBytes();
-
-    public String toString();
 
 }

@@ -38,7 +38,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
 
-    private CloudMap<String, String> mCloudMap;
+    private CloudMap mCloudMap;
     private EditText gamelevel;
     private EditText points;
     private EditText nickname;
@@ -54,6 +54,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
+        mCloudMap = new CloudMapImpl(this);
 
         /*
         get the data from all the fields
@@ -62,6 +63,8 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         points = (EditText) findViewById(R.id.points);
         nickname = (EditText) findViewById(R.id.nickname);
         email = (EditText) findViewById(R.id.email);
+
+        loadFromCloud();
 
         findViewById(R.id.submitToCloud).setOnClickListener(this);
         findViewById(R.id.loadFromCloud).setOnClickListener(this);
@@ -83,15 +86,15 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     private void loadFromCloud() {
         Log.d(LOG_TAG, "loading from google cloud service [" + mCloudMap.toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
 
-        gamelevel.setText(mCloudMap.getValue("gameLevel"));
-        points.setText(mCloudMap.getValue("points"));
-        nickname.setText(mCloudMap.getValue("nickname"));
-        email.setText(mCloudMap.getValue("email"));
+        gamelevel.setText((String)mCloudMap.get("gameLevel"));
+        points.setText((String)mCloudMap.get("points"));
+        nickname.setText((String)mCloudMap.get("nickname"));
+        email.setText((String)mCloudMap.get("email"));
     }
 
     private void submitToCloud() {
         Log.d(LOG_TAG, "about to submit google cloud service for nickname [" + nickname.getText().toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
-        mCloudMap = new CloudMapImpl(this);
+
 
         mCloudMap.put("gameLevel", gamelevel.getText().toString());
         mCloudMap.put("points", points.getText().toString());
@@ -99,6 +102,6 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         mCloudMap.put("email", email.getText().toString());
         Log.d(LOG_TAG, "submitting to google cloud service gameLevel [" + mCloudMap.toString() + "]");
 
-        mCloudMap.flush(mCloudMap);
+        mCloudMap.flush();
     }
 }
