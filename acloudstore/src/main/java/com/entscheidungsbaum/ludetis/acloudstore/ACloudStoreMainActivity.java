@@ -22,6 +22,7 @@ import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMap;
 import com.entscheidungsbaum.ludetis.acloudstore.gcs.CloudMapImpl;
 import com.google.example.games.basegameutils.GameHelper;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 /**
  * Start
+ *
  * @author marcus
  */
 public class ACloudStoreMainActivity extends Activity implements View.OnClickListener {
@@ -86,10 +88,10 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     private void loadFromCloud() {
         Log.d(LOG_TAG, "loading from google cloud service [" + mCloudMap.toString() + "] + gamelevel [" + gamelevel.getText().toString() + "]");
 
-        gamelevel.setText((String)mCloudMap.get("gameLevel"));
-        points.setText((String)mCloudMap.get("points"));
-        nickname.setText((String)mCloudMap.get("nickname"));
-        email.setText((String)mCloudMap.get("email"));
+        gamelevel.setText((String) mCloudMap.get("gameLevel"));
+        points.setText((String) mCloudMap.get("points"));
+        nickname.setText((String) mCloudMap.get("nickname"));
+        email.setText((String) mCloudMap.get("email"));
     }
 
     private void submitToCloud() {
@@ -102,6 +104,10 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         mCloudMap.put("email", email.getText().toString());
         Log.d(LOG_TAG, "submitting to google cloud service gameLevel [" + mCloudMap.toString() + "]");
 
-        mCloudMap.flush();
+        try {
+            mCloudMap.flush();
+        } catch (IOException ioe) {
+            Log.e(LOG_TAG, "could not flush game level");
+        }
     }
 }

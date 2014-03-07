@@ -1,5 +1,6 @@
 package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -12,7 +13,7 @@ public interface CloudMap  {
     /**
      * flushes the map to cloud
      */
-    public void flush();
+    public void flush() throws IOException;
 
     public Collection<String> getAllKeys();
 
