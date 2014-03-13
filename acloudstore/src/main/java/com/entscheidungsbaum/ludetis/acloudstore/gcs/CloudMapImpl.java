@@ -9,16 +9,18 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.Scopes;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -30,7 +32,7 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
 
     public static final String[] mScopes = {Scopes.APP_STATE};
 
-    private Map<String, Serializable> cache = new HashMap<String, Serializable>();
+    private Map<String, Object> cache = new HashMap<String, Object>();
 
     public static final int STATE_UNCONFIGURED = 0;
     public static final int STATE_DISCONNECTED = 1;
@@ -87,13 +89,15 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
     public synchronized void flush() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(new GZIPOutputStream(baos));
-
-        pw.println("enter JSON map here");
+        Log.d(LOG_TAG, "Cache = " + cache);
+        pw.println(cloudMap2Json(cache));
 
         pw.close();
 
         byte[] bytes = baos.toByteArray();
+        Log.d(LOG_TAG, " BYTES  " + bytes);
 
+        /* if cloudMap is larger then 256 split to the 4 available slots */
         if (bytes.length > 256 * 1024L) {
             for (int i = 0; i < 4; i++) {
                 int off = i * 256 * 1024;
@@ -102,10 +106,10 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
                 byte[] chunk = new byte[length];
 
                 System.arraycopy(bytes, off, chunk, 0, length);
-
-                // write chunk to cloud slot #i
+                Log.d(LOG_TAG, " Chunk = {" + chunk + "}");
+                /* write chunk to cloud slot #i */
                 mAppStateClient.connect();
-                mState=STATE_CONNECTED;
+                mState = STATE_CONNECTED;
 
                 if (length < 256 * 1024)
                     break;
@@ -117,7 +121,6 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
             // write data to cloud
         }
 
-        // TODO send cache to cloud
     }
 
     @Override
@@ -126,18 +129,40 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
     }
 
     @Override
-    public synchronized Serializable get(String key) {
+    public synchronized Object get(String key) {
         return cache.get(key);
     }
 
 
     @Override
-    public synchronized void put(String key, Serializable value) {
+    public synchronized void put(String key, String value) {
         cache.put(key, value);
+
     }
 
-    private JSONObject cloudMap2Json(CloudMap aCloudMap) {
+
+    @Override
+    public Set<Map.Entry<String, Object>> entrySet() {
+        return cache.entrySet();
+    }
+
+    private JSONObject cloudMap2Json(Map<String, Object> aCloudMap) {
         JSONObject jObject = new JSONObject();
+        Iterator iter = aCloudMap.values().iterator();
+        Log.d(LOG_TAG, "aCloudMap EntrySet = " + aCloudMap.entrySet());
+
+        try {
+            for (Map.Entry<String, Object> cloudEntry : aCloudMap.entrySet()) {
+                jObject.put(cloudEntry.getKey(), cloudEntry.getValue());
+
+            }
+            Log.d(LOG_TAG, " JsonObject [ " + jObject.toString() + " ]");
+
+        } catch (JSONException jsonE)
+
+        {
+            Log.e(LOG_TAG, "cannot create json intermediate object" + jsonE);
+        }
 
         return jObject;
     }
