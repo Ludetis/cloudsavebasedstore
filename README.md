@@ -66,3 +66,14 @@ android {
 - simples put into the mCloudMap
 4. flush
 - upload of the mCloudMap into the Cloud
+- 
+
+
+## the bucket approach and the appropriate slicing 
+
+we needed to split the data to be persisted into the well known 4 availabel 1024Kbytes slices.
+To do so we found out to head for flush approach. 
+To learn more about the bit buckets refer to the google API description Cloud Save and Google Drive
+https://developers.google.com/games/services/common/concepts/cloudsave#cloud_save_title_and_google_drive
+
+
