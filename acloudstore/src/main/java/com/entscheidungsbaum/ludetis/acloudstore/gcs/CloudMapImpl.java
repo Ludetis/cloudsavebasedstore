@@ -50,6 +50,7 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
                 .create();
         mState = STATE_DISCONNECTED;
 
+
         // TODO load cache from cloud
     }
 
@@ -87,6 +88,9 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
 
     @Override
     public synchronized void flush() throws IOException {
+
+        int chunkLength = 0;
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(new GZIPOutputStream(baos));
         Log.d(LOG_TAG, "Cache = " + cache);
@@ -95,30 +99,42 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
         pw.close();
 
         byte[] bytes = baos.toByteArray();
-        Log.d(LOG_TAG, " BYTES  " + bytes);
+        mAppStateClient.connect();
+        mState = STATE_CONNECTED;
+
+        Log.d(LOG_TAG, " BYTES  " + bytes + " connected = {" + mAppStateClient.isConnected() + "}");
+
+
 
         /* if cloudMap is larger then 256 split to the 4 available slots */
         if (bytes.length > 256 * 1024L) {
             for (int i = 0; i < 4; i++) {
                 int off = i * 256 * 1024;
-                int length = (bytes.length - off) > 256 * 1024 ? 256 * 1024 : bytes.length - off;
+                chunkLength = (bytes.length - off) > (256 * 1024) ? (256 * 1024) : bytes.length - off;
 
-                byte[] chunk = new byte[length];
+                byte[] chunk = new byte[chunkLength];
 
-                System.arraycopy(bytes, off, chunk, 0, length);
-                Log.d(LOG_TAG, " Chunk = {" + chunk + "}");
+                System.arraycopy(bytes, off, chunkLength, 0, chunkLength);
+                Log.d(LOG_TAG, " Chunk = {" + chunkLength + "}" + " at part {" + i + "}");
                 /* write chunk to cloud slot #i */
-                mAppStateClient.connect();
-                mState = STATE_CONNECTED;
 
-                if (length < 256 * 1024)
+                if (mAppStateClient.isConnected()) {
+                    Log.d(LOG_TAG, "Cloud connected and ready to connect");
+                    mAppStateClient.updateState(mState, chunk);
+                } else {
+                    break;
+                }
+                if (chunkLength < (256 * 1024L))
                     break;
             }
-            // chunk
 
             // write chunks to cloud chunk #0
+
+
         } else {
-            // write data to cloud
+            Log.d(LOG_TAG, "chunks below limit so persisting  " + mAppStateClient.isConnected());
+            mAppStateClient.updateState(mState, bytes);
+
         }
 
     }
@@ -167,5 +183,17 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
         return jObject;
     }
 
+    /**
+     * refactored byte generator ! not in use so far !
+     */
+    private void generateBytefixedArray() {
+    }
 
+
+    private boolean cloudAction() {
+        Log.d(LOG_TAG, "Method cloudAction invoked");
+
+
+        return true;
+    }
 }
