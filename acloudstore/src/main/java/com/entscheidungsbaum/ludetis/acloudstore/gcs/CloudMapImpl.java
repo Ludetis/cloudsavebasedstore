@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.google.android.gms.appstate.AppStateClient;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,14 +19,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by marcus on 1/20/14.
  */
-public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    /* migrated to the GoogleApiClient */
+    //GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     final String LOG_TAG = CloudMapImpl.class.getName();
 
@@ -42,12 +44,13 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
     int mState = STATE_UNCONFIGURED;
 
     AppStateClient mAppStateClient;
+    GoogleApiClient.Builder mGoogleApiClient = null;
 
     public CloudMapImpl(Context context) {
-
-        mAppStateClient = new AppStateClient.Builder(context, this, this)
-                .setScopes(mScopes)
-                .create();
+        GoogleApiClient.Builder mGoogleApiClient = new GoogleApiClient(context.getApplicationContext(), this, this);
+//        mAppStateClient = new AppStateClient.Builder(context, this, this)
+//                .setScopes(mScopes)
+//                .create();
         mState = STATE_DISCONNECTED;
 
 
@@ -74,6 +77,11 @@ public class CloudMapImpl implements CloudMap, GooglePlayServicesClient.Connecti
     }
 
     @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    //  @Override
     public void onDisconnected() {
         mState = STATE_DISCONNECTED;
         Log.i(LOG_TAG, "onDisconnected invoked state =[" + mState + "]");
