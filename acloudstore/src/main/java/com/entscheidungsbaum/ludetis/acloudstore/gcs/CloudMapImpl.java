@@ -1,13 +1,18 @@
 package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.appstate.AppStateClient;
+import com.google.android.gms.appstate.AppStateManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,16 +48,24 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 
     int mState = STATE_UNCONFIGURED;
 
-    AppStateClient mAppStateClient;
-    GoogleApiClient.Builder mGoogleApiClient = null;
+    //AppStateClient mAppStateClient;
+    GoogleApiClient mGoogleApiClient = null;
+    Activity mActivity = null;
 
     public CloudMapImpl(Context context) {
-        GoogleApiClient.Builder mGoogleApiClient = new GoogleApiClient(context.getApplicationContext(), this, this);
+
+
+        Log.d(LOG_TAG, "setting up GoogleApiClient" + context.getApplicationContext() + " ");
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
+        Log.d(LOG_TAG, "mGoogleApiClient => " + mGoogleApiClient);
 //        mAppStateClient = new AppStateClient.Builder(context, this, this)
 //                .setScopes(mScopes)
 //                .create();
         mState = STATE_DISCONNECTED;
-
+        new CloudConnector().execute();
 
         // TODO load cache from cloud
     }
@@ -68,6 +81,40 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
      * compile 'com.google.android.gms:play-services:4.0.30'
      * }
      */
+
+    private class CloudConnector extends AsyncTask<Void, Void, Boolean> {
+
+        protected Boolean doInBackground(Void... f) {
+            Log.d(LOG_TAG, "do In Background connecting to cloud save !! ");
+
+            mGoogleApiClient.connect();
+
+            if (mGoogleApiClient.isConnected() == true) {
+                Log.d(LOG_TAG, " connected " + mGoogleApiClient.isConnected());
+
+                mState = STATE_CONNECTED;
+            }
+
+            return true;
+
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+
+        }
+
+        protected void onPostExecute(Long result) {
+
+        }
+    }
+
+    void setupGoogleApiClient() {
+        // could be that there is pending instance ?
+        if (mGoogleApiClient != null) {
+            Log.e(LOG_TAG, " error api state occured ");
+            throw new IllegalStateException("Illegal State Exception");
+        }
+    }
 
 
     @Override
@@ -107,44 +154,46 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
         pw.close();
 
         byte[] bytes = baos.toByteArray();
-        mAppStateClient.connect();
-        mState = STATE_CONNECTED;
+        // mAppStateClient.connect();
+        // mState = STATE_CONNECTED;
 
-        Log.d(LOG_TAG, " BYTES  " + bytes + " connected = {" + mAppStateClient.isConnected() + "}");
+        Log.d(LOG_TAG, " BYTES  " + bytes + " connected = {" + mGoogleApiClient.isConnected() + "}");
 
 
-
+        if (mGoogleApiClient.isConnected() == true) {
         /* if cloudMap is larger then 256 split to the 4 available slots */
-        if (bytes.length > 256 * 1024L) {
-            for (int i = 0; i < 4; i++) {
-                int off = i * 256 * 1024;
-                chunkLength = (bytes.length - off) > (256 * 1024) ? (256 * 1024) : bytes.length - off;
+            if (bytes.length > 256 * 1024L) {
+                for (int i = 0; i < 4; i++) {
+                    int off = i * 256 * 1024;
+                    chunkLength = (bytes.length - off) > (256 * 1024) ? (256 * 1024) : bytes.length - off;
 
-                byte[] chunk = new byte[chunkLength];
+                    byte[] chunk = new byte[chunkLength];
 
-                System.arraycopy(bytes, off, chunkLength, 0, chunkLength);
-                Log.d(LOG_TAG, " Chunk = {" + chunkLength + "}" + " at part {" + i + "}");
+                    System.arraycopy(bytes, off, chunkLength, 0, chunkLength);
+                    Log.d(LOG_TAG, " Chunk = {" + chunkLength + "}" + " at part {" + i + "}");
                 /* write chunk to cloud slot #i */
 
-                if (mAppStateClient.isConnected()) {
-                    Log.d(LOG_TAG, "Cloud connected and ready to connect");
-                    mAppStateClient.updateState(mState, chunk);
-                } else {
-                    break;
+                    if (mGoogleApiClient.isConnected()) {
+                        Log.d(LOG_TAG, "Cloud connected and ready to connect");
+                        //new googleApiClient approach
+                        AppStateManager.update(mGoogleApiClient, mState, chunk);
+                    } else {
+                        break;
+                    }
+                    if (chunkLength < (256 * 1024L))
+                        break;
                 }
-                if (chunkLength < (256 * 1024L))
-                    break;
+
+                // write chunks to cloud chunk #0
+
+
+            } else {
+                Log.d(LOG_TAG, "chunks below limit so persisting  " + mGoogleApiClient.isConnected());
+                AppStateManager.update(mGoogleApiClient, mState, bytes);
             }
-
-            // write chunks to cloud chunk #0
-
-
         } else {
-            Log.d(LOG_TAG, "chunks below limit so persisting  " + mAppStateClient.isConnected());
-            mAppStateClient.updateState(mState, bytes);
-
+            Log.d(LOG_TAG, "unable to persist to cloud caching ... ");
         }
-
     }
 
     @Override
