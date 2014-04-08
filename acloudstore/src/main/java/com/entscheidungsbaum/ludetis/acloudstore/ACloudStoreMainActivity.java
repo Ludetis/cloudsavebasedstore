@@ -46,6 +46,8 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     private EditText nickname;
     private EditText email;
 
+    private boolean onConnected;
+
 
     public ACloudStoreMainActivity() {
     }
@@ -57,6 +59,13 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         setContentView(R.layout.fragment_acloud_store_main);
 
         mCloudMap = new CloudMapImpl(this);
+        try {
+            onConnected = mCloudMap.onConnect2Cloud();
+            Log.d(LOG_TAG, " Connected ? = " + onConnected);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, " cannot connect from activity to google cloud +" + e);
+        }
+
 
         /*
         get the data from all the fields
@@ -105,9 +114,19 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         Log.d(LOG_TAG, "submitting to google cloud service gameLevel [" + mCloudMap.toString() + "]");
 
         try {
-            mCloudMap.flush();
-        } catch (IOException ioe) {
-            Log.e(LOG_TAG, "could not flush game level");
+            if (onConnected) {
+                Log.d(LOG_TAG, " about to flush onConnected = " + onConnected);
+                mCloudMap.flush();
+
+            } else {
+                Log.d(LOG_TAG, "do it locally here first !!");
+
+            }
+        } catch (IOException e) {
+
+            Log.d(LOG_TAG, "cannot flush !!");
         }
+
     }
+
 }
