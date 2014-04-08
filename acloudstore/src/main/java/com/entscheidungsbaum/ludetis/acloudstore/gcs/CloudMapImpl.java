@@ -61,6 +61,8 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Games.API)
                 .addScope(Games.SCOPE_GAMES)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .build();
         Log.d(LOG_TAG, "mGoogleApiClient => " + mGoogleApiClient);
 //        mAppStateClient = new AppStateClient.Builder(context, this, this)
@@ -68,78 +70,32 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 //                .create();
         mState = STATE_DISCONNECTED;
 
+        Log.d(LOG_TAG, "do In Background connecting to cloud save !! ");
 
-        // TODO load cache from cloud
+        mGoogleApiClient.connect();
     }
-
-    /**
-     * 1. Step to run the google cloud save
-     * first you need to ensure the installation of the google play service
-     * located in extras within the Android SDK Manager
-     * <p/>
-     * using the android studio ide you need to upgrade the
-     * build.gradle
-     * dependencies {
-     * compile 'com.google.android.gms:play-services:4.0.30'
-     * }
-     */
-
-    @Override
-    public boolean onConnect2Cloud() throws Exception {
-        isConnected = (
-                new AsyncTask<Void, Void, Boolean>() {
-
-                    protected Boolean doInBackground(Void... f) {
-                        Log.d(LOG_TAG, "do In Background connecting to cloud save !! ");
-
-                        mGoogleApiClient.connect();
-
-                        if (mGoogleApiClient.isConnected() == true) {
-                            Log.d(LOG_TAG, " connected " + mGoogleApiClient.isConnected());
-                            mState = STATE_CONNECTED;
-                        }
-                        return true;
-                    }
-
-                    protected void onProgressUpdate(Integer... progress) {
-                        Log.d(LOG_TAG, "progress in connecting " + progress);
-                    }
-
-                    protected void onPostExecute(String result) {
-
-                        Log.d(LOG_TAG, " on Post Execute = " + result + " isConnected =" + isConnected);
-
-                    }
-
-                }.execute().get());
-        Log.d(LOG_TAG, " isConnected within asyncTask = " + isConnected);
-        return isConnected;
-    }
-
-    void setupGoogleApiClient() {
-        // could be that there is pending instance ?
-        if (mGoogleApiClient != null) {
-            Log.e(LOG_TAG, " error api state occured ");
-            throw new IllegalStateException("Illegal State Exception");
-        }
-    }
+//
+//    void setupGoogleApiClient() {
+//        // could be that there is pending instance ?
+//        if (mGoogleApiClient != null) {
+//            Log.e(LOG_TAG, " error api state occured ");
+//            throw new IllegalStateException("Illegal State Exception");
+//        }
+//    }
 
 
     @Override
     public void onConnected(Bundle bundle) {
         mState = STATE_CONNECTED;
         Log.i(LOG_TAG, "onConnected invoked state =[" + mState + "]");
+
+        // TODO load cache from cloud and notify our Callback (which does not yet exist)
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
-    }
-
-    //  @Override
-    public void onDisconnected() {
         mState = STATE_DISCONNECTED;
-        Log.i(LOG_TAG, "onDisconnected invoked state =[" + mState + "]");
+        Log.i(LOG_TAG, "onConnectionSuspended invoked state =[" + mState + "]");
     }
 
     @Override

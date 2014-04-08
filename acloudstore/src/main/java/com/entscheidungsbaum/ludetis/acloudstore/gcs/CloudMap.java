@@ -11,8 +11,6 @@ import java.util.Set;
  */
 public interface CloudMap  {
 
-
-    public boolean onConnect2Cloud() throws Exception;
     /**
      * flushes the map to cloud
      */

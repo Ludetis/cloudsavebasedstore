@@ -58,13 +58,13 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
-        mCloudMap = new CloudMapImpl(this);
-        try {
-            onConnected = mCloudMap.onConnect2Cloud();
-            Log.d(LOG_TAG, " Connected ? = " + onConnected);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, " cannot connect from activity to google cloud +" + e);
-        }
+        mCloudMap = new CloudMapImpl(this); // will also start to connect
+//        try {
+//            mCloudMap.onConnect2Cloud();
+//            //Log.d(LOG_TAG, " Connected ? = " + onConnected);
+//        } catch (Exception e) {
+//            Log.e(LOG_TAG, " cannot connect from activity to google cloud +" + e);
+//        }
 
 
         /*
@@ -75,7 +75,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         nickname = (EditText) findViewById(R.id.nickname);
         email = (EditText) findViewById(R.id.email);
 
-        loadFromCloud();
+        //loadFromCloud(); // TODO move this into some onConnected listener or just postpone
 
         findViewById(R.id.submitToCloud).setOnClickListener(this);
         findViewById(R.id.loadFromCloud).setOnClickListener(this);
