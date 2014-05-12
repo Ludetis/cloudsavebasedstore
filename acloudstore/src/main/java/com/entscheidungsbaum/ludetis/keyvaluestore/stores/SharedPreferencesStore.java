@@ -3,18 +3,14 @@ package com.entscheidungsbaum.ludetis.keyvaluestore.stores;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.util.Base64;
 import android.util.Log;
 
 import com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 /**
+ * sample implemtation for a store based on Android's local SharedPreferences.
  * Created by uwe on 12.05.14.
  */
 public class SharedPreferencesStore extends BaseKeyValueStore {
@@ -64,31 +60,17 @@ public class SharedPreferencesStore extends BaseKeyValueStore {
             return null;
         }
         //Log.d(LOG_TAG, "key found: "+key + "=" + res);
-        ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decode(res, Base64.DEFAULT));
-        ObjectInputStream oInputStream = null;
-        try {
-            oInputStream = new ObjectInputStream(bis);
-            //Log.d(LOG_TAG, "reading key: "+key);
-            return oInputStream.readObject();
-        } catch (IOException e) {
-            Log.e(LOG_TAG,"IOException: " + e);
-        } catch (ClassNotFoundException e) {
-            Log.e(LOG_TAG,"class not found: " + e);
-        }
-        return null;
+        return deserialize(res);
     }
 
     @Override
     public void put(String key, Object value) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        if(!isKeyValid(key)) throw new IllegalArgumentException("Keys may not contain underscores");
         try {
-            ObjectOutputStream os = new ObjectOutputStream(bos);
-            os.writeObject(value); // will throw if object is not serializable
-            os.close();
             if(editor==null) {
                 editor = sharedPreferences.edit();
             }
-            editor.putString(keyPrefix+"_"+key, Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT) );
+            editor.putString(keyPrefix+"_"+key, serialize(value));
             //Log.d(LOG_TAG, "wrote key: "+key);
         } catch (IOException e) {
             Log.e(LOG_TAG, "ioexception: " + e);
@@ -96,7 +78,18 @@ public class SharedPreferencesStore extends BaseKeyValueStore {
     }
 
     @Override
+    public void delete(String key) {
+        // currently not implemented
+        Log.w(LOG_TAG, "deleting keys is not implemented");
+    }
+
+    @Override
     public String toString() {
         return STORE_NAME;
+    }
+
+    @Override
+    public boolean isKeyValid(String key) {
+        return !key.contains("_");
     }
 }

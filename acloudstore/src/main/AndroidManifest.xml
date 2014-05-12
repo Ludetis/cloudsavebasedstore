@@ -2,11 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.entscheidungsbaum.ludetis.acloudstore">
 
-
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="19" />
-
 
     <application
         android:allowBackup="true"
@@ -35,6 +33,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

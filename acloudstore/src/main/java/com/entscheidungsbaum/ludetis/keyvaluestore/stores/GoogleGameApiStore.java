@@ -12,15 +12,10 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
@@ -87,6 +82,8 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
         Log.i(LOG_TAG, "onConnected invoked state =[" + mState + "]");
 
         // TODO load cache from cloud
+        // unzip
+        // split into cache
 
         if(statusListener!=null) statusListener.onConnected();
     }
@@ -108,24 +105,21 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     @Override
     public synchronized void flush() throws IOException {
 
-        int chunkLength = 0;
-
+        // create zipped content from cache
+        Log.d(LOG_TAG,"compressing cache...");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(new GZIPOutputStream(baos));
-        Log.d(LOG_TAG, "Cache = " + cache);
-        pw.println(cloudMap2Json(cache));
-        Log.d(LOG_TAG, "Printwriter - " + pw);
-        pw.close();
+        for(Map.Entry<String,Object> e :  cache.entrySet()) {
+            pw.println(e.getKey()+"|"+serialize(e.getValue()));
+        }
+        pw.flush();
+
+        int chunkLength = 0;
 
         byte[] bytes = baos.toByteArray();
-        // mAppStateClient.connect();
-        // mState = STATE_CONNECTED;
+        Log.d(LOG_TAG,"compressed length="+bytes.length);
 
-        Log.d(LOG_TAG, " BYTES  " + bytes);
-
-
-
-        /* if cloudMap is larger then 256 split to the 4 available slots */
+        /* if cloudMap is larger than 256 split to the 4 available slots */
         if (bytes.length > 256 * 1024L) {
             for (int i = 0; i < 4; i++) {
                 int off = i * 256 * 1024;
@@ -137,8 +131,8 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
                 Log.d(LOG_TAG, " Chunk = {" + chunkLength + "}" + " at part {" + i + "}");
                 /* write chunk to cloud slot #i */
 
-                Log.d(LOG_TAG, "Cloud connected and ready to connect");
                 //new googleApiClient approach
+                // FIXME???
                 AppStateManager.update(mGoogleApiClient, mState, chunk);
 
                 if (chunkLength < (256 * 1024L))
@@ -150,6 +144,7 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
 
         } else {
             Log.d(LOG_TAG, "chunks below limit so persisting  ");
+            // FIXME???
             AppStateManager.update(mGoogleApiClient, mState, bytes);
         }
 
@@ -164,31 +159,42 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
 
     @Override
     public synchronized void put(String key, Object value) {
+        if(!isKeyValid(key)) throw new IllegalArgumentException("Keys may not contain pipe characters");
         cache.put(key, value);
+    }
 
+    @Override
+    public void delete(String key) {
+        cache.remove(key);
     }
 
 
+// not used anymore, because we use the Base64 based serialization from the base class
+//
+//    private JSONObject cloudMap2Json(Map<String, Object> aCloudMap) {
+//        JSONObject jObject = new JSONObject();
+//        Iterator iter = aCloudMap.values().iterator();
+//        Log.d(LOG_TAG, "aCloudMap EntrySet = " + aCloudMap.entrySet());
+//
+//        try {
+//            for (Map.Entry<String, Object> cloudEntry : aCloudMap.entrySet()) {
+//                jObject.put(cloudEntry.getKey(), cloudEntry.getValue());
+//
+//            }
+//            Log.d(LOG_TAG, " JsonObject [ " + jObject.toString() + " ]");
+//
+//        } catch (JSONException jsonE)
+//
+//        {
+//            Log.e(LOG_TAG, "cannot create json intermediate object" + jsonE);
+//        }
+//
+//        return jObject;
+//    }
 
-    private JSONObject cloudMap2Json(Map<String, Object> aCloudMap) {
-        JSONObject jObject = new JSONObject();
-        Iterator iter = aCloudMap.values().iterator();
-        Log.d(LOG_TAG, "aCloudMap EntrySet = " + aCloudMap.entrySet());
-
-        try {
-            for (Map.Entry<String, Object> cloudEntry : aCloudMap.entrySet()) {
-                jObject.put(cloudEntry.getKey(), cloudEntry.getValue());
-
-            }
-            Log.d(LOG_TAG, " JsonObject [ " + jObject.toString() + " ]");
-
-        } catch (JSONException jsonE)
-
-        {
-            Log.e(LOG_TAG, "cannot create json intermediate object" + jsonE);
-        }
-
-        return jObject;
+    @Override
+    public boolean isKeyValid(String key) {
+        // we use | to separate entries, so keys may not contain them.
+        return !key.contains("|");
     }
-
 }

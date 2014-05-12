@@ -8,11 +8,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.entscheidungsbaum.ludetis.acloudstore.R;
-import com.entscheidungsbaum.ludetis.keyvaluestore.stores.SharedPreferencesStore;
+import com.entscheidungsbaum.ludetis.keyvaluestore.stores.RedisStore;
 
 import java.io.IOException;
 
-import static com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore.*;
+import static com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore.StatusListener;
 
 
 /**
@@ -21,7 +21,6 @@ import static com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore.*;
  * @author marcus
  */
 public class ACloudStoreMainActivity extends Activity implements View.OnClickListener, StatusListener {
-
 
     private static final String LOG_TAG = ACloudStoreMainActivity.class.getName();
 
@@ -36,8 +35,9 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
-        store = new SharedPreferencesStore(getApplicationContext(), this, null);
+        //store = new SharedPreferencesStore(getApplicationContext(), this, null);
         //store = new GoogleGameApiStore(this,this);
+        store = new RedisStore(this, "109.73.50.19", "com.entscheidungsbaum.acloudstoretest.");
 
         // wire editTexts
         gamelevel = (EditText) findViewById(R.id.gamelevel);
@@ -61,14 +61,30 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     }
 
     private void loadFromStore() {
-        Log.d(LOG_TAG, "loading from store...");
+        Log.d(LOG_TAG, "loading from store in background...");
+        (new Thread() {
+            @Override
+            public void run() {
+                final String gameLevel = (String) store.get("gameLevel");
+                final String points1 = (String) store.get("points");
+                final String nickname1 = (String) store.get("nickname");
+                final String email1 = (String) store.get("email");
 
-        gamelevel.setText((String) store.get("gameLevel"));
-        points.setText((String) store.get("points"));
-        nickname.setText((String) store.get("nickname"));
-        email.setText((String) store.get("email"));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-        Toast.makeText(this,"loaded!",Toast.LENGTH_SHORT).show();
+                        gamelevel.setText(gameLevel);
+                        points.setText(points1);
+                        nickname.setText(nickname1);
+                        email.setText(email1);
+
+                        Toast.makeText(getApplicationContext(),"loaded!",Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+        }).start();
     }
 
     private void submitToStore() {
@@ -79,16 +95,29 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         store.put("nickname", nickname.getText().toString());
         store.put("email", email.getText().toString());
 
-        Log.d(LOG_TAG, "flushing store...");
+        Log.d(LOG_TAG, "flushing store in background...");
+        (new Thread() {
+            @Override
+            public void run() {
+                try {
+                    store.flush();
 
-        try {
-            store.flush();
+                    // show toast on UI thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-            Toast.makeText(this,"saved!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"saved!",Toast.LENGTH_SHORT).show();
 
-        } catch (IOException e) {
-            Log.d(LOG_TAG, "cannot flush: " + e);
-        }
+                        }
+                    });
+
+                } catch (IOException e) {
+                    Log.d(LOG_TAG, "cannot flush: " + e);
+                }
+            }
+        }).start();
+
 
     }
 
