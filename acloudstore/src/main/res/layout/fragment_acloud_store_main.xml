@@ -38,8 +38,8 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Load from cloud"
-                        android:id="@+id/loadFromCloud"
+                        android:text="@string/load"
+                        android:id="@+id/load"
                         android:layout_column="1" />
                 </TableRow>
 
@@ -52,7 +52,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Enter gamelevel"
-                        android:id="@+id/textView"
                         android:layout_gravity="left|top" />
 
                     <EditText
@@ -72,7 +71,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Enter your points"
-                        android:id="@+id/textView"
                         android:layout_gravity="left|top" />
 
                     <EditText
@@ -92,7 +90,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Enter you nickname"
-                        android:id="@+id/textView"
                         android:layout_gravity="left|top" />
 
                     <EditText
@@ -142,8 +139,8 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Submit to cloud"
-                        android:id="@+id/submitToCloud"
+                        android:text="@string/save"
+                        android:id="@+id/save"
                         android:layout_column="1" />
                 </TableRow>
 

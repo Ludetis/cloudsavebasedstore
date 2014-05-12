@@ -1,13 +1,11 @@
-package com.entscheidungsbaum.ludetis.acloudstore.gcs;
+package com.entscheidungsbaum.ludetis.keyvaluestore.stores;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.LinearGradient;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.appstate.AppStateClient;
+import com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore;
 import com.google.android.gms.appstate.AppStateManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -21,22 +19,20 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by marcus on 1/20/14.
  */
-public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /* migrated to the GoogleApiClient */
     //GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
-    final String LOG_TAG = CloudMapImpl.class.getName();
+    final String LOG_TAG = GoogleGameApiStore.class.getName();
 
     public static final String[] mScopes = {Scopes.APP_STATE};
 
@@ -54,8 +50,9 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
     GoogleApiClient mGoogleApiClient = null;
     Activity mActivity = null;
 
-    public CloudMapImpl(Context context) {
+    public GoogleGameApiStore(Context context, StatusListener listener) {
 
+        super(listener);
 
         Log.d(LOG_TAG, "setting up GoogleApiClient" + context.getApplicationContext() + " ");
         mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -89,7 +86,9 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
         mState = STATE_CONNECTED;
         Log.i(LOG_TAG, "onConnected invoked state =[" + mState + "]");
 
-        // TODO load cache from cloud and notify our Callback (which does not yet exist)
+        // TODO load cache from cloud
+
+        if(statusListener!=null) statusListener.onConnected();
     }
 
     @Override
@@ -102,8 +101,9 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mState = STATE_DISCONNECTED;
         Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]");
-
+        if(statusListener!=null) statusListener.onError("connection failed");
     }
+
 
     @Override
     public synchronized void flush() throws IOException {
@@ -155,10 +155,6 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 
     }
 
-    @Override
-    public synchronized Collection getAllKeys() {
-        return cache.keySet();
-    }
 
     @Override
     public synchronized Object get(String key) {
@@ -167,16 +163,12 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 
 
     @Override
-    public synchronized void put(String key, String value) {
+    public synchronized void put(String key, Object value) {
         cache.put(key, value);
 
     }
 
 
-    @Override
-    public Set<Map.Entry<String, Object>> entrySet() {
-        return cache.entrySet();
-    }
 
     private JSONObject cloudMap2Json(Map<String, Object> aCloudMap) {
         JSONObject jObject = new JSONObject();
@@ -199,17 +191,4 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
         return jObject;
     }
 
-    /**
-     * refactored byte generator ! not in use so far !
-     */
-    private void generateBytefixedArray() {
-    }
-
-
-    private boolean cloudAction() {
-        Log.d(LOG_TAG, "Method cloudAction invoked");
-
-
-        return true;
-    }
 }
