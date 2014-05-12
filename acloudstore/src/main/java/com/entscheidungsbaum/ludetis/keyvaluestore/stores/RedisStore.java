@@ -1,6 +1,7 @@
 package com.entscheidungsbaum.ludetis.keyvaluestore.stores;
 
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.entscheidungsbaum.ludetis.keyvaluestore.BaseKeyValueStore;
@@ -24,10 +25,20 @@ public class RedisStore extends BaseKeyValueStore {
     private Handler handler = new Handler();
     private String keyPrefix="";
 
-    public RedisStore(StatusListener listener, String host, String keyPrefix) {
+    /**
+     * create a store instance connected to a remote Redis server.
+     * @param listener the status listener
+     * @param host hostname or IP. Default port will be used.
+     * @param keyPrefix String to prepend to each key. To create a user specific storage region,
+     *                  use something like a UUID+"_" here which cannot be guessed and save that UUID locally.
+     *                  It becomes the user's key to his storage region
+     * @param password The password to auth against the server if it is protected. If null, no auth will be done.
+     */
+    public RedisStore(StatusListener listener, String host, String keyPrefix, String password) {
         super(listener);
         if(keyPrefix!=null) this.keyPrefix=keyPrefix;
         jedis = new Jedis(host);
+        if(!TextUtils.isEmpty(password)) jedis.auth(password);
         handler.post(new Runnable() {
             @Override
             public void run() {
