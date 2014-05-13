@@ -28,8 +28,8 @@ public class RedisStore extends BaseKeyValueStore {
     private String password;
 
     /**
-     * create a store instance connected to a remote Redis server.
-     * @param listener the status listener
+     * create a store instance for a remote Redis server. May be called on main thread.
+     * @param listener the status listener. Will be called immediately because we connect later "on demand".
      * @param host hostname or IP. Default port will be used.
      * @param keyPrefix String to prepend to each key. To create a user specific storage region,
      *                  use something like a UUID+"_" here which cannot be guessed and save that UUID locally.
@@ -41,24 +41,25 @@ public class RedisStore extends BaseKeyValueStore {
         if(keyPrefix!=null) this.keyPrefix=keyPrefix;
         this.host=host;
         this.password=password;
-        connect();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if(jedis!=null) {
-                    statusListener.onConnected();
-                } else {
-                    statusListener.onError("could not connect");
-                }
+                statusListener.onConnected();
             }
         });
-        Log.i(getClass().getSimpleName(),"connected to Jedis");
     }
 
     private synchronized void connect() {
-        if(jedis!=null && jedis.isConnected()) return;
-        jedis = new Jedis(host);
-        if(!TextUtils.isEmpty(password)) jedis.auth(password);
+        if(jedis==null) {
+            jedis = new Jedis(host);
+            Log.i(getClass().getSimpleName(),"created new Jedis client");
+        }
+        if(!jedis.isConnected()) {
+            jedis.connect();
+            Log.i(getClass().getSimpleName(),"connected to Redis server " + host);
+            if (!TextUtils.isEmpty(password)) jedis.auth(password);
+        }
     }
 
     @Override
