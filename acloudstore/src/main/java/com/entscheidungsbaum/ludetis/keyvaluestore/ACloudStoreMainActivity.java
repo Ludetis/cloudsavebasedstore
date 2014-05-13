@@ -35,9 +35,16 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
 
+        // uncomment one of these lines to use a certain store
+
+        // shared preferences based local store (works)
         //store = new SharedPreferencesStore(getApplicationContext(), this, null);
+
+        // Google Games based user specific cloud store (TODO)
         //store = new GoogleGameApiStore(this,this);
-        store = new RedisStore(this, "109.73.50.19", "com.entscheidungsbaum.acloudstoretest.");
+
+        // Redis nosql based non user specific cloud store (works)
+        store = new RedisStore(this, "ludetis.de", "com.entscheidungsbaum.acloudstoretest.", null);
 
         // wire editTexts
         gamelevel = (EditText) findViewById(R.id.gamelevel);

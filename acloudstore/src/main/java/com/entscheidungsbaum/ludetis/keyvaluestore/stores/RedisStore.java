@@ -20,10 +20,12 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisStore extends BaseKeyValueStore {
 
-    private final Jedis jedis;
+    private  Jedis jedis;
     private final Map<String,Object> cache = new HashMap<String, Object>();
     private Handler handler = new Handler();
     private String keyPrefix="";
+    private String host;
+    private String password;
 
     /**
      * create a store instance connected to a remote Redis server.
@@ -37,8 +39,9 @@ public class RedisStore extends BaseKeyValueStore {
     public RedisStore(StatusListener listener, String host, String keyPrefix, String password) {
         super(listener);
         if(keyPrefix!=null) this.keyPrefix=keyPrefix;
-        jedis = new Jedis(host);
-        if(!TextUtils.isEmpty(password)) jedis.auth(password);
+        this.host=host;
+        this.password=password;
+        connect();
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -52,8 +55,15 @@ public class RedisStore extends BaseKeyValueStore {
         Log.i(getClass().getSimpleName(),"connected to Jedis");
     }
 
+    private synchronized void connect() {
+        if(jedis!=null && jedis.isConnected()) return;
+        jedis = new Jedis(host);
+        if(!TextUtils.isEmpty(password)) jedis.auth(password);
+    }
+
     @Override
     public void flush() throws IOException {
+        connect();
         synchronized (cache) {
             for(Map.Entry<String,Object> e : cache.entrySet()) {
                 jedis.set(keyPrefix+e.getKey(), serialize(e.getValue()));
@@ -70,6 +80,7 @@ public class RedisStore extends BaseKeyValueStore {
 //                return cache.get(key);
 //            }
 //        }
+        connect();
         String value = jedis.get(keyPrefix+key);
         if(value==null) return null;
         return deserialize(value);
