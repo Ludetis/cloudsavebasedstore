@@ -75,7 +75,6 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
 //        }
 //    }
 
-
     @Override
     public void onConnected(Bundle bundle) {
         mState = STATE_CONNECTED;
@@ -98,7 +97,7 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mState = STATE_DISCONNECTED;
         Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]");
-        if(statusListener!=null) statusListener.onError("connection failed");
+
     }
 
 
@@ -169,32 +168,4 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     }
 
 
-// not used anymore, because we use the Base64 based serialization from the base class
-//
-//    private JSONObject cloudMap2Json(Map<String, Object> aCloudMap) {
-//        JSONObject jObject = new JSONObject();
-//        Iterator iter = aCloudMap.values().iterator();
-//        Log.d(LOG_TAG, "aCloudMap EntrySet = " + aCloudMap.entrySet());
-//
-//        try {
-//            for (Map.Entry<String, Object> cloudEntry : aCloudMap.entrySet()) {
-//                jObject.put(cloudEntry.getKey(), cloudEntry.getValue());
-//
-//            }
-//            Log.d(LOG_TAG, " JsonObject [ " + jObject.toString() + " ]");
-//
-//        } catch (JSONException jsonE)
-//
-//        {
-//            Log.e(LOG_TAG, "cannot create json intermediate object" + jsonE);
-//        }
-//
-//        return jObject;
-//    }
-
-    @Override
-    public boolean isKeyValid(String key) {
-        // we use | to separate entries, so keys may not contain them.
-        return !key.contains("|");
-    }
 }
