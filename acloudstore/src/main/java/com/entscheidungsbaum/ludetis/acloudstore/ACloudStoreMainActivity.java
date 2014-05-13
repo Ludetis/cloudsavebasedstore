@@ -114,14 +114,14 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         Log.d(LOG_TAG, "submitting to google cloud service gameLevel [" + mCloudMap.toString() + "]");
 
         try {
-            if (onConnected) {
-                Log.d(LOG_TAG, " about to flush onConnected = " + onConnected);
+//            if (onConnected) {
+               Log.d(LOG_TAG, " about to flush onConnected = " + onConnected);
                 mCloudMap.flush();
 
-            } else {
-                Log.d(LOG_TAG, "do it locally here first !!");
+//            } else {
+//                Log.d(LOG_TAG, "do it locally here first !!");
 
-            }
+//            }
         } catch (IOException e) {
 
             Log.d(LOG_TAG, "cannot flush !!");

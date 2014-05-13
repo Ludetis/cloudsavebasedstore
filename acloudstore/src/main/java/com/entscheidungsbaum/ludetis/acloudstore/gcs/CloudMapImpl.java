@@ -2,18 +2,15 @@ package com.entscheidungsbaum.ludetis.acloudstore.gcs;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.LinearGradient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.appstate.AppStateClient;
 import com.google.android.gms.appstate.AppStateManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +80,10 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 //        }
 //    }
 
+    @Override
+    public boolean onUpdated() throws Exception {
+        return mGoogleApiClient.isConnected();
+    }
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -101,7 +102,7 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mState = STATE_DISCONNECTED;
-        Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]");
+        Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]" + connectionResult.toString());
 
     }
 
@@ -198,6 +199,7 @@ public class CloudMapImpl implements CloudMap, GoogleApiClient.ConnectionCallbac
 
         return jObject;
     }
+
 
     /**
      * refactored byte generator ! not in use so far !
