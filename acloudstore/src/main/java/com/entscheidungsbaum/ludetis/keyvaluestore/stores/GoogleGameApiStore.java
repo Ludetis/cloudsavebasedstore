@@ -10,7 +10,8 @@ import com.google.android.gms.appstate.AppStateManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -82,11 +83,34 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
         mState = STATE_CONNECTED;
         Log.i(LOG_TAG, "onConnected invoked state =[" + mState + "]");
 
-        // TODO load cache from cloud
+        // load cache from cloud
+        final byte[][] results = new byte[4][];
+        for (int i=0; i<4; i++) {
+            final PendingResult<AppStateManager.StateResult> result = AppStateManager.load(mGoogleApiClient, i);
+            result.setResultCallback(new ResultCallback<AppStateManager.StateResult>() {
+                @Override
+                public void onResult(AppStateManager.StateResult stateResult) {
+                    final AppStateManager.StateLoadedResult loadedResult = stateResult.getLoadedResult();
+                    Log.d(LOG_TAG, "got stateResult for slot " + loadedResult.getStateKey());
+                    results[loadedResult.getStateKey()] = loadedResult.getLocalData();
+                    for(int j=0; j<4; j++) {
+                        if(results[j]==null) return;
+                    }
+                    loadResults(results);
+                }
+            });
+
+        }
         // unzip
         // split into cache
 
         if(statusListener!=null) statusListener.onConnected();
+    }
+
+    private void loadResults(byte[][] results) {
+        // TODO concat results[0]..[3]
+        // TODO uncompress results
+        // TODO deserialize to our cache map
     }
 
     @Override
@@ -163,10 +187,11 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
 
                 //new googleApiClient approach
                 // FIXME???
-                AppStateManager.update(mGoogleApiClient, mState, chunk);
+                AppStateManager.update(mGoogleApiClient, i, chunk);
 
                 if (chunkLength < (256 * 1024L))
                     break;
+                // fill unused slots with 0 length byte arrays
             }
 
             // write chunks to cloud chunk #0
@@ -175,7 +200,8 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
         } else {
             Log.d(LOG_TAG, "chunks below limit so persisting  ");
             // FIXME???
-            AppStateManager.update(mGoogleApiClient, mState, bytes);
+            AppStateManager.update(mGoogleApiClient, 0, bytes);
+            // fill unused slots with 0 length byte arrays
         }
 
     }
