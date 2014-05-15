@@ -101,16 +101,15 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
             });
 
         }
-        // unzip
-        // split into cache
 
-        if(statusListener!=null) statusListener.onConnected();
     }
 
     private void loadResults(byte[][] results) {
         // TODO concat results[0]..[3]
         // TODO uncompress results
         // TODO deserialize to our cache map
+
+        if(statusListener!=null) statusListener.onConnected();
     }
 
     @Override
