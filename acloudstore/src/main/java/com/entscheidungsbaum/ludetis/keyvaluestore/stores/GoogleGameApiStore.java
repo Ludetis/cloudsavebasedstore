@@ -53,8 +53,8 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
 
         Log.d(LOG_TAG, "setting up GoogleApiClient" + activity.getApplicationContext() + " ");
         mGoogleApiClient = new GoogleApiClient.Builder(activity.getApplicationContext())
-                .addApi(Games.API)
-                .addScope(Games.SCOPE_GAMES)
+                .addApi(AppStateManager.API)
+                .addScope(AppStateManager.SCOPE_APP_STATE)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
