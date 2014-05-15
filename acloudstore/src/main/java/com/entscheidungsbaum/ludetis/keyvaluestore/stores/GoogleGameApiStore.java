@@ -1,7 +1,7 @@
 package com.entscheidungsbaum.ludetis.keyvaluestore.stores;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -27,9 +27,10 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     /* migrated to the GoogleApiClient */
     //GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
-    final String LOG_TAG = GoogleGameApiStore.class.getName();
+    private static final String LOG_TAG = GoogleGameApiStore.class.getSimpleName();
 
     public static final String[] mScopes = {Scopes.APP_STATE};
+    public static final int RESOLUTION_REQUEST_CODE = 984168;
 
     private Map<String, Object> cache = new HashMap<String, Object>();
 
@@ -45,12 +46,12 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     GoogleApiClient mGoogleApiClient = null;
     Activity mActivity = null;
 
-    public GoogleGameApiStore(Context context, StatusListener listener) {
-
+    public GoogleGameApiStore(Activity activity, StatusListener listener) {
         super(listener);
+        mActivity = activity;
 
-        Log.d(LOG_TAG, "setting up GoogleApiClient" + context.getApplicationContext() + " ");
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        Log.d(LOG_TAG, "setting up GoogleApiClient" + activity.getApplicationContext() + " ");
+        mGoogleApiClient = new GoogleApiClient.Builder(activity.getApplicationContext())
                 .addApi(Games.API)
                 .addScope(Games.SCOPE_GAMES)
                 .addConnectionCallbacks(this)
@@ -90,13 +91,21 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     @Override
     public void onConnectionSuspended(int i) {
         mState = STATE_DISCONNECTED;
-        Log.i(LOG_TAG, "onConnectionSuspended invoked state =[" + mState + "]");
+        Log.d(LOG_TAG, "onConnectionSuspended invoked state =[" + mState + "]");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mState = STATE_DISCONNECTED;
-        Log.i(LOG_TAG, "onConnectionFailed invoked state =[" + mState + "]");
+        Log.w(LOG_TAG, "connection failed: " + connectionResult.toString());
+        if(connectionResult.hasResolution()) {
+            Log.d(LOG_TAG, "trying resolution");
+            try {
+                connectionResult.startResolutionForResult(mActivity, RESOLUTION_REQUEST_CODE);
+            } catch (IntentSender.SendIntentException e) {
+                Log.w(LOG_TAG, "could not start resolution", e);
+            }
+        }
 
     }
 

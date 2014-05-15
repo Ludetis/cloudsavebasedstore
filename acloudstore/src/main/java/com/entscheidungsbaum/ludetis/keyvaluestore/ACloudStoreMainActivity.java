@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.entscheidungsbaum.ludetis.acloudstore.R;
-import com.entscheidungsbaum.ludetis.keyvaluestore.stores.RedisStore;
+import com.entscheidungsbaum.ludetis.keyvaluestore.stores.GoogleGameApiStore;
 
 import java.io.IOException;
 
@@ -41,10 +41,10 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
         //store = new SharedPreferencesStore(getApplicationContext(), this, null);
 
         // Google Games based user specific cloud store (TODO)
-        //store = new GoogleGameApiStore(this,this);
+        store = new GoogleGameApiStore(this,this);
 
         // Redis nosql based non user specific cloud store (works)
-        store = new RedisStore(this, "ludetis.de", "com.entscheidungsbaum.acloudstoretest.", null);
+        //store = new RedisStore(this, "ludetis.de", "com.entscheidungsbaum.acloudstoretest.", null);
 
         // wire editTexts
         gamelevel = (EditText) findViewById(R.id.gamelevel);
