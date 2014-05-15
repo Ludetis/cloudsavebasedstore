@@ -101,5 +101,14 @@ public abstract class BaseKeyValueStore {
         return true;
     }
 
+    /**
+     * call this to notify about an onActivityResult call
+     * @param requestCode
+     * @param resultCode
+     * @return true if handled
+     */
+    public boolean notifyActivityResult(int requestCode, int resultCode) {
+        return false;
+    }
 
 }

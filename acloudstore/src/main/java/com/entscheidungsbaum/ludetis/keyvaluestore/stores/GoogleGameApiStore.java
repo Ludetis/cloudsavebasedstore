@@ -45,6 +45,7 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     //AppStateClient mAppStateClient;
     GoogleApiClient mGoogleApiClient = null;
     Activity mActivity = null;
+    private boolean mIntentInProgress;
 
     public GoogleGameApiStore(Activity activity, StatusListener listener) {
         super(listener);
@@ -91,22 +92,43 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     @Override
     public void onConnectionSuspended(int i) {
         mState = STATE_DISCONNECTED;
-        Log.d(LOG_TAG, "onConnectionSuspended invoked state =[" + mState + "]");
+        Log.d(LOG_TAG, "onConnectionSuspended invoked state =[" + mState + "], trying to connect again");
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mState = STATE_DISCONNECTED;
         Log.w(LOG_TAG, "connection failed: " + connectionResult.toString());
-        if(connectionResult.hasResolution()) {
+        if(!mIntentInProgress && connectionResult.hasResolution()) {
+            mIntentInProgress = true;
             Log.d(LOG_TAG, "trying resolution");
             try {
                 connectionResult.startResolutionForResult(mActivity, RESOLUTION_REQUEST_CODE);
             } catch (IntentSender.SendIntentException e) {
                 Log.w(LOG_TAG, "could not start resolution", e);
+                mIntentInProgress = false;
+                mGoogleApiClient.connect();
             }
         }
 
+    }
+
+
+    @Override
+    public boolean notifyActivityResult(int requestCode, int resultCode) {
+        if(requestCode==RESOLUTION_REQUEST_CODE) {
+            Log.d(LOG_TAG, "notified by activity result, resultCode=" + resultCode);
+            mIntentInProgress = false;
+            if(resultCode==Activity.RESULT_OK) {
+                if (!mGoogleApiClient.isConnecting()) {
+                    Log.d(LOG_TAG, "trying to connect again");
+                    mGoogleApiClient.connect();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 
@@ -175,6 +197,5 @@ public class GoogleGameApiStore extends BaseKeyValueStore implements GoogleApiCl
     public void delete(String key) {
         cache.remove(key);
     }
-
 
 }

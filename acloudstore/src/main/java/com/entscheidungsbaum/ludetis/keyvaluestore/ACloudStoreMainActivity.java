@@ -1,6 +1,7 @@
 package com.entscheidungsbaum.ludetis.keyvaluestore;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -146,5 +147,10 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     @Override
     public void onError(String cause) {
         Toast.makeText(this,"error: " + cause,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        store.notifyActivityResult(requestCode, resultCode);
     }
 }
