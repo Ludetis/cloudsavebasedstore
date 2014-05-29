@@ -35,14 +35,15 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_acloud_store_main);
-
+        Log.d(LOG_TAG, "Oncreated started");
         // uncomment one of these lines to use a certain store
 
         // shared preferences based local store (works)
         //store = new SharedPreferencesStore(getApplicationContext(), this, null);
 
         // Google Games based user specific cloud store (TODO)
-        store = new GoogleGameApiStore(this,this);
+        store = new GoogleGameApiStore(this, this);
+        Log.d(LOG_TAG, "Status Listener =>" + store.statusListener);
 
         // Redis nosql based non user specific cloud store (works)
         //store = new RedisStore(this, "ludetis.de", "com.entscheidungsbaum.acloudstoretest.", null);
@@ -87,7 +88,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
                         nickname.setText(nickname1);
                         email.setText(email1);
 
-                        Toast.makeText(getApplicationContext(),"loaded!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "loaded!", Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -115,7 +116,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
                         @Override
                         public void run() {
 
-                            Toast.makeText(getApplicationContext(),"saved!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "saved!", Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -132,7 +133,8 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
     @Override
     public void onConnected() {
 
-        Toast.makeText(this,"connected",Toast.LENGTH_SHORT).show();
+        Log.d(LOG_TAG, "On Connected ");
+        Toast.makeText(this, "connected", Toast.LENGTH_SHORT).show();
 
         findViewById(R.id.save).setEnabled(true);
         findViewById(R.id.load).setEnabled(true);
@@ -146,7 +148,7 @@ public class ACloudStoreMainActivity extends Activity implements View.OnClickLis
 
     @Override
     public void onError(String cause) {
-        Toast.makeText(this,"error: " + cause,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "error: " + cause, Toast.LENGTH_SHORT).show();
     }
 
     @Override

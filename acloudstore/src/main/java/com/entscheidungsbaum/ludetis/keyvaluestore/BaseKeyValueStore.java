@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 /**
  * Created by marcus on 1/20/14.
@@ -18,11 +19,13 @@ public abstract class BaseKeyValueStore {
 
     public interface StatusListener {
         public void onConnected();
+
         public void onError(String cause);
     }
 
     /**
      * Internal constructor. Implementations will propably need more parameters.
+     *
      * @param statusListener
      */
     protected BaseKeyValueStore(StatusListener statusListener) {
@@ -38,6 +41,7 @@ public abstract class BaseKeyValueStore {
     /**
      * gets a value from the store
      * Note that if the store needs to access the network to do this, it MUST NOT be called by the foreground thread.
+     *
      * @param key
      * @return null if the key does not exist
      */
@@ -45,6 +49,7 @@ public abstract class BaseKeyValueStore {
 
     /**
      * deserialize a serialized string to an object. Will only work if String has been serialized using serialize().
+     *
      * @param serialized
      * @return
      */
@@ -58,13 +63,14 @@ public abstract class BaseKeyValueStore {
         } catch (IOException e) {
             Log.e(getClass().getSimpleName(), "IOException: " + e);
         } catch (ClassNotFoundException e) {
-            Log.e(getClass().getSimpleName(),"class not found: " + e);
+            Log.e(getClass().getSimpleName(), "class not found: " + e);
         }
         return null;
     }
 
     /**
      * puts a value into the store, overriding the privious value. IMPORTANT: You MUST call flush() to actually store your changes.
+     *
      * @param key
      * @param value
      */
@@ -73,6 +79,7 @@ public abstract class BaseKeyValueStore {
     /**
      * serialize an object to a serialized form which can be written to string bases stores.
      * This will fail if the Object cannot be serialized (does not implement Serializable).
+     *
      * @param value
      * @return serialized value
      * @throws IOException
@@ -86,14 +93,29 @@ public abstract class BaseKeyValueStore {
     }
 
     /**
+     * deserialize the byte value coming from the cloud store
+     * @param value
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    protected String deserialize(byte[] value) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(value);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        return String.valueOf(Base64.decode(ois.readObject().toString(), Base64.DEFAULT));
+    }
+
+    /**
      * remove a key and its value from the store. Will do nothing if the key does not exist.
      * You MUST call flush() to ensure this is really done.
+     *
      * @param key
      */
     public abstract void delete(String key);
 
     /**
      * check if this key may be used in this store. Some stores might reject keys if they contain certain characters.
+     *
      * @param key
      * @return true if key is valid.
      */
@@ -103,6 +125,7 @@ public abstract class BaseKeyValueStore {
 
     /**
      * call this to notify about an onActivityResult call
+     *
      * @param requestCode
      * @param resultCode
      * @return true if handled
